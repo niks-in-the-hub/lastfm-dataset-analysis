@@ -27,17 +27,13 @@ def final_analysis(df, show_output: bool = False):
         (Top 10 tracks from top 50 sessions)
     """
 
-    # --------------------------------------
-    # 1. Timestamp conversion
-    # --------------------------------------
+    # Timestamp conversion
     df = df.withColumn("timestamp_ts", to_timestamp("timestamp"))
 
     # Window ordered by timestamp per user
     w = Window.partitionBy("user_id").orderBy("timestamp_ts")
 
-    # --------------------------------------
-    # 2. Compute time gaps and session flags
-    # --------------------------------------
+    # Compute time gaps and session flags
     df = df.withColumn("prev_ts", lag("timestamp_ts").over(w))
 
     df = df.withColumn(
@@ -55,9 +51,7 @@ def final_analysis(df, show_output: bool = False):
         spark_sum("new_session").over(w)
     )
 
-    # --------------------------------------
-    # 3. Identify top 50 sessions
-    # --------------------------------------
+    # Identify top 50 sessions
     session_sizes = (
         df.groupBy("user_id", "session_id")
           .count()
@@ -69,9 +63,7 @@ def final_analysis(df, show_output: bool = False):
     # Filter original DF for only those sessions
     df_top50 = df.join(top_sessions, on=["user_id", "session_id"], how="inner")
 
-    # --------------------------------------
-    # 4. Rank top songs
-    # --------------------------------------
+    # Rank top songs
     top_songs = (
         df_top50.groupBy("track_name")
                 .count()

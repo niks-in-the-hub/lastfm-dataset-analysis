@@ -1,10 +1,9 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
+from pydantic_validation import validate_schema
 
 
-# ------------------------------------
-# 1. Schema definition
-# ------------------------------------
+# Schema definition
 LASTFM_SCHEMA = StructType([
     StructField("user_id", StringType(), True),
     StructField("timestamp", StringType(), True),
@@ -15,9 +14,7 @@ LASTFM_SCHEMA = StructType([
 ])
 
 
-# ------------------------------------
-# 2. Central SparkSession builder
-# ------------------------------------
+# Central SparkSession builder
 def create_spark(app_name: str = "LastFM ETL"):
     """
     Creates (or returns existing) SparkSession with consistent configuration.
@@ -35,9 +32,7 @@ def create_spark(app_name: str = "LastFM ETL"):
     return spark
 
 
-# ------------------------------------
-# 3. TSV → Parquet Conversion
-# ------------------------------------
+# TSV to Parquet Conversion
 def tsv_to_parquet(input_path: str, output_path: str):
     """
     Reads a TSV file using the predefined LASTFM_SCHEMA
@@ -53,14 +48,15 @@ def tsv_to_parquet(input_path: str, output_path: str):
         .csv(input_path)
     )
 
+    # Validation with Pydantic Data Model
+    validate_schema(df)
+
     df.write.mode("overwrite").parquet(output_path)
 
     print(f"TSV -> Parquet conversion complete!\n   Output folder: {output_path}")
 
 
-# ------------------------------------
-# 4. Inspect Parquet Folder
-# ------------------------------------
+# Inspect Parquet Folder
 def inspect_parquet_folder(input_path: str):
     """
     Loads parquet files into a DataFrame,
@@ -73,17 +69,10 @@ def inspect_parquet_folder(input_path: str):
 
     df = spark.read.parquet(input_path)
 
-    print("\n===== DATAFRAME SCHEMA =====")
+    print("\n DATAFRAME SCHEMA ")
     df.printSchema()
 
-    print("\n===== SAMPLE ROWS =====")
+    print("\n SAMPLE ROWS ")
     df.show(10, truncate=False)
 
-    row_count = df.count()
-    col_count = len(df.columns)
-
-    print("\n===== SUMMARY =====")
-    print(f"Rows: {row_count}")
-    print(f"Columns: {col_count}\n")
-
-    return df, row_count, col_count
+    return df
