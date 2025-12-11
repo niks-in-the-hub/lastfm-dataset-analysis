@@ -32,24 +32,28 @@ def main():
     
     args = parse_args()
 
-    tsv_input_path = args.tsv_input_path
-    parquet_path = os.makedirs(os.path.join(tsv_input_path, "parquet_path"))    
-    output_path = args.output_path
-    if not tsv_input_path:
+    tsv_input_path = args.input
+    output_path = args.output
+
+    # Parquet directory inside output folder
+    parquet_path = os.path.join(output_path, "parquet")
+    os.makedirs(parquet_path, exist_ok=True)
+
+    if not os.path.exists(tsv_input_path):
         raise ValueError(
             "ERROR: Input file not found"
         )
 
     print(f"\n Running Analysis with the following user provided parameters")
-    print(f"Input TSV: {tsv_input_path}")
-
+    print(f"Input TSV: {tsv_input_path}\n")
+    print(f"Parquet output path: {parquet_path}\n")
     print(f"Final CSV Output: {output_path}\n")
 
     #Convert TSV -> Parquet
     tsv_to_parquet(tsv_input_path, parquet_path)
 
     #Load parquet dataset
-    df = inspect_parquet_folder(parquet_path)
+    df, *_ = inspect_parquet_folder(parquet_path)
 
     #Run final analysis
     print("\n Top 10 Songs:")
