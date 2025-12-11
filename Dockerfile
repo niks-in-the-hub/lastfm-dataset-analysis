@@ -1,38 +1,36 @@
-FROM python:3.10-slim
+FROM python:3.10.12-slim
 
-# Install utilities required by Spark
+# Install Java and required utilities
 RUN apt-get update && \
-    apt-get install -y wget curl gnupg ca-certificates procps && \
-    apt-get clean
+    apt-get install -y --no-install-recommends \
+        wget curl gnupg ca-certificates procps tini && \
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public \
+        | gpg --dearmor > /usr/share/keyrings/adoptium.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] \
+        https://packages.adoptium.net/artifactory/deb \
+        $(. /etc/os-release && echo $VERSION_CODENAME) main" \
+        > /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends temurin-17-jdk && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Add Adoptium (Temurin) key and repo
-RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public \
-    | gpg --dearmor \
-    | tee /usr/share/keyrings/adoptium.gpg > /dev/null
-
-RUN echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] \
-    https://packages.adoptium.net/artifactory/deb \
-    $(. /etc/os-release && echo $VERSION_CODENAME) main" \
-    > /etc/apt/sources.list.d/adoptium.list
-
-# Install Temurin JDK 17 (ARM64 on Apple Silicon)
-RUN apt-get update && apt-get install -y temurin-17-jdk && apt-get clean
-
-# Set JAVA_HOME based on actual installed directory
-ENV JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-arm64
+# Set stable JAVA_HOME (correct for Temurin installs)
+ENV JAVA_HOME="/usr/lib/jvm/temurin-17-jdk"
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# Verify Java installs correctly
 RUN java -version
 
+WORKDIR /app
+
 # Install Python dependencies
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY src /app/src
+# Copy source code
+COPY src/ src/
 
-WORKDIR /app/src
+# Remain root user (for guaranteed write permissions on mounted volumes)
+USER root
 
-# Default command: run pipeline
-CMD ["python", "main.py"]
+CMD ["python", "src/main.py"]
+
