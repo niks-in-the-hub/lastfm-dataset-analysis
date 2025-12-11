@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
-from pydantic_validation import validate_schema
+from schema_validation import validate_schema
 
 
 # Schema definition
@@ -48,8 +48,8 @@ def tsv_to_parquet(input_path: str, output_path: str):
         .csv(input_path)
     )
 
-    # Validation with Pydantic Data Model
-    validate_schema(df)
+    # Schema Validation
+    validate_schema(df, LASTFM_SCHEMA)
 
     df.write.mode("overwrite").parquet(output_path)
 

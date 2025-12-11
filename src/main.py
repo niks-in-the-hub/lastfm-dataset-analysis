@@ -53,7 +53,7 @@ def main():
     tsv_to_parquet(tsv_input_path, parquet_path)
 
     #Load parquet dataset
-    df, *_ = inspect_parquet_folder(parquet_path)
+    df = inspect_parquet_folder(parquet_path)
 
     #Run final analysis
     print("\n Top 10 Songs:")

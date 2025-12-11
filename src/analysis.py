@@ -1,6 +1,5 @@
-from pyspark.sql.functions import (
-    to_timestamp, lag, unix_timestamp, col, when, sum as spark_sum
-)
+from pyspark.sql import functions as F
+
 from pyspark.sql.window import Window
 
 
@@ -26,29 +25,29 @@ def final_analysis(df, show_output: bool = False):
         DataFrame containing columns: track_name, count
         (Top 10 tracks from top 50 sessions)
     """
-
+    
     # Timestamp conversion
-    df = df.withColumn("timestamp_ts", to_timestamp("timestamp"))
+    df = df.withColumn("timestamp_ts", F.to_timestamp("timestamp"))
 
     # Window ordered by timestamp per user
     w = Window.partitionBy("user_id").orderBy("timestamp_ts")
 
     # Compute time gaps and session flags
-    df = df.withColumn("prev_ts", lag("timestamp_ts").over(w))
+    df = df.withColumn("prev_ts", F.lag("timestamp_ts").over(w))
 
     df = df.withColumn(
         "gap_minutes",
-        (unix_timestamp("timestamp_ts") - unix_timestamp("prev_ts")) / 60
+        (F.unix_timestamp("timestamp_ts") - F.unix_timestamp("prev_ts")) / 60
     )
 
     df = df.withColumn(
         "new_session",
-        when((col("gap_minutes") > 20) | col("gap_minutes").isNull(), 1).otherwise(0)
+        F.when((F.col("gap_minutes") > 20) | F.col("gap_minutes").isNull(), 1).otherwise(0)
     )
 
     df = df.withColumn(
         "session_id",
-        spark_sum("new_session").over(w)
+        F.sum("new_session").over(w)
     )
 
     # Identify top 50 sessions
@@ -58,7 +57,7 @@ def final_analysis(df, show_output: bool = False):
           .withColumnRenamed("count", "track_count")
     )
 
-    top_sessions = session_sizes.orderBy(col("track_count").desc()).limit(50)
+    top_sessions = session_sizes.orderBy(F.col("track_count").desc()).limit(50)
 
     # Filter original DF for only those sessions
     df_top50 = df.join(top_sessions, on=["user_id", "session_id"], how="inner")
@@ -67,7 +66,7 @@ def final_analysis(df, show_output: bool = False):
     top_songs = (
         df_top50.groupBy("track_name")
                 .count()
-                .orderBy(col("count").desc())
+                .orderBy(F.col("count").desc())
     )
 
     top_10_songs = top_songs.limit(10)
