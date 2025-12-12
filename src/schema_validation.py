@@ -8,10 +8,19 @@ def validate_schema(df, expected_schema: StructType):
       - Data type validation
       - Nullability validation
     Raises ValueError if any check fails.
+
+    Parameters:-
+    df: pyspark.sql.DataFrame
+        The Spark DataFrame whose schema will be validated.
+    expected_schema : pyspark.sql.types.StructType
+        The schema the DataFrame is will be confirmed against.
     """
 
     # COLUMN CHECK
     def check_columns():
+        """
+        Ensure column names and their order match the expected schema.
+        """
         actual_cols = [f.name for f in df.schema]
         expected_cols = [f.name for f in expected_schema]
 
@@ -25,6 +34,12 @@ def validate_schema(df, expected_schema: StructType):
 
     # TYPE CHECK
     def check_types():
+        """
+        Validate that each column has the expected Spark data type.
+
+        Only the data type classes are compared (e.g., StringType,
+        IntegerType), not metadata details.
+        """
         actual_types = [type(f.dataType) for f in df.schema]
         expected_types = [type(f.dataType) for f in expected_schema]
 
@@ -38,6 +53,12 @@ def validate_schema(df, expected_schema: StructType):
 
     # NULLABILITY CHECK
     def check_nullability():
+        """
+        Check whether each column's nullability matches the expectation.
+
+        This ensures required (non-nullable) columns are enforced and
+        optional columns are explicitly allowed to be null.
+        """
         actual_nulls = [f.nullable for f in df.schema]
         expected_nulls = [f.nullable for f in expected_schema]
 

@@ -17,7 +17,15 @@ LASTFM_SCHEMA = StructType([
 # Central SparkSession builder
 def create_spark(app_name: str = "LastFM ETL"):
     """
-    Creates (or returns existing) SparkSession with consistent configuration.
+    Creates (or returns existing) SparkSession with consistent local configuration.
+
+    Parameters:-
+    app_name: str, optional
+        Name of Spark application.
+
+    Returns:-
+    pyspark.sql.SparkSession
+        An active SparkSession instance
     """
     spark = (
         SparkSession.builder

@@ -39,6 +39,9 @@ def main():
     parquet_path = os.path.join(output_path, "parquet")
     os.makedirs(parquet_path, exist_ok=True)
 
+    result_dir = os.path.join(output_path, "final_results")
+    os.makedirs(result_dir, exist_ok=True)
+
     if not os.path.exists(tsv_input_path):
         raise ValueError(
             "ERROR: Input file not found"
@@ -47,7 +50,7 @@ def main():
     print(f"\n Running Analysis with the following user provided parameters")
     print(f"Input TSV: {tsv_input_path}\n")
     print(f"Parquet output path: {parquet_path}\n")
-    print(f"Final CSV Output: {output_path}\n")
+    print(f"Final CSV Output: {result_dir}\n")
 
     #Convert TSV -> Parquet
     tsv_to_parquet(tsv_input_path, parquet_path)
@@ -66,11 +69,11 @@ def main():
         .mode("overwrite")
         .option("delimiter", "\t")
         .option("header", "true")
-        .option("compression", "none")
-        .csv(output_path)
+        .option("compression", "none")  # Disable compression to reduce memory usage
+        .csv(result_dir)
     )
 
-    print(f"\n Final results written to: {output_path}\n")
+    print(f"\n Final results written to: {result_dir}\n")
 
 
 if __name__ == "__main__":
