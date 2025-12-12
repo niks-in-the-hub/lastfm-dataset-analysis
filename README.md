@@ -5,6 +5,8 @@ The repo contains a pyspark application to produce an analysis of top 10 songs p
 count on the lastfm dataset. It is designed to be executed from the CLI with command line arguments.
 ## 2. Environment setup
 
+####Please ensure Docker Desktop is running in the background
+
 #### 1. Clone the Repository
 ```bash
 git clone https://github.com/your-username/lastfm-dataset-analysis.git
@@ -59,4 +61,11 @@ Spark will create the results inside a subdirectory like:
 On the host computer, the output file will appear in:
 ```bash
 output/final_results/
+```
+
+## 4. Sample output
+- The sample output can be viewed in-
+```bash
+lastfm-dataset-analysis/
+├── sample_output
 ```
