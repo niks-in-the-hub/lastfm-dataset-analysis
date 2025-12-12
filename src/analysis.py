@@ -58,8 +58,12 @@ def final_analysis(df: DataFrame, show_output: bool = False) -> DataFrame:
     top_sessions = session_sizes.orderBy(F.col("track_count").desc()).limit(50)
 
     # Filter original DF for only those sessions
-    df_top50 = df.join(top_sessions, on=["user_id", "session_id"], how="inner")
-
+    df_top50 = df.join(
+        F.broadcast(top_sessions),
+        ["user_id", "session_id"],
+        "inner"
+    )
+    
     # Rank top songs
     top_songs = (
         df_top50.groupBy("track_name")
