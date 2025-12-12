@@ -5,6 +5,17 @@ import argparse
 
 
 def parse_args():
+    """
+    Parse command-line arguments for the local PySpark job.
+
+    Defines and validates the required input and output paths provided when running the script from the command line.
+
+    Returns:-
+    argparse.Namespace
+        Parsed command-line arguments containing:
+        - input: path to the input TSV file
+        - output: path to the output directory
+    """
     parser = argparse.ArgumentParser(description="PySpark local job")
     
     parser.add_argument(
@@ -26,6 +37,13 @@ def parse_args():
 def main():
     """
     Main ETL + analysis pipeline for LastFM dataset.
+
+    This function orchestrates the entire workflow:
+      1. Parse user-provided command-line arguments
+      2. Convert the raw TSV input into Parquet format
+      3. Load and inspect the Parquet dataset
+      4. Run the final transformations and logic
+      5. Write the results to a TSV file
     """
 
    #Initialise parser and define path arguments
