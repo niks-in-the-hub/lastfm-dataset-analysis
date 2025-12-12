@@ -5,7 +5,8 @@ The repo contains a pyspark application to produce an analysis of top 10 songs p
 count on the lastfm dataset. It is designed to be executed from the CLI with command line arguments.
 ## 2. Environment setup
 
-####Please ensure Docker Desktop is running in the background
+#### Please ensure Docker Desktop is running in the background
+#### Important Note: The docker build was validated on MacOS. If other OS/ processors are being used, adaptation of the Docker file maybe necessary
 
 #### 1. Clone the Repository
 ```bash
