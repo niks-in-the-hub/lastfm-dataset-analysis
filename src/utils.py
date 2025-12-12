@@ -23,6 +23,8 @@ def create_spark(app_name: str = "LastFM ETL"):
         SparkSession.builder
         .appName(app_name)
         .master("local[*]")
+        .config("spark.driver.memory", "8g")
+        .config("spark.sql.shuffle.partitions", "64")
         .config("spark.sql.parquet.compression.codec", "snappy")
         .getOrCreate()
     )

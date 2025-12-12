@@ -66,6 +66,7 @@ def main():
         .mode("overwrite")
         .option("delimiter", "\t")
         .option("header", "true")
+        .option("compression", "none")
         .csv(output_path)
     )
 

@@ -8,8 +8,7 @@ def final_analysis(df, show_output: bool = False):
     Performs user session segmentation and identifies the top 10 most played
     tracks from the top 50 largest listening sessions.
 
-    Parameters
-    ----------
+    Parameters:-
     df : pyspark.sql.DataFrame
         Must contain columns:
         - user_id
@@ -19,8 +18,7 @@ def final_analysis(df, show_output: bool = False):
     show_output : bool
         If True, prints the top 10 songs in the console.
 
-    Returns
-    -------
+    Returns:-
     pyspark.sql.DataFrame
         DataFrame containing columns: track_name, count
         (Top 10 tracks from top 50 sessions)
@@ -71,9 +69,9 @@ def final_analysis(df, show_output: bool = False):
 
     top_10_songs = top_songs.limit(10)
 
-    # Optional console display
+    # Print statement
     if show_output:
-        print("\n===== TOP 10 SONGS =====")
+        print("\n TOP 10 SONGS ")
         top_10_songs.show(truncate=False)
 
     return top_10_songs
