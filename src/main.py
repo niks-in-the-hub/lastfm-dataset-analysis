@@ -2,9 +2,10 @@ import os
 from utils import tsv_to_parquet, inspect_parquet_folder
 from analysis import final_analysis
 import argparse
+from argparse import Namespace
 
 
-def parse_args():
+def parse_args() -> Namespace:
     """
     Parse command-line arguments for the local PySpark job.
 
@@ -34,7 +35,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     """
     Main ETL + analysis pipeline for LastFM dataset.
 

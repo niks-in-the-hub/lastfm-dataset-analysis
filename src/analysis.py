@@ -1,9 +1,9 @@
-from pyspark.sql import functions as F
+from pyspark.sql import DataFrame, functions as F
 
 from pyspark.sql.window import Window
 
 
-def final_analysis(df, show_output: bool = False):
+def final_analysis(df: DataFrame, show_output: bool = False) -> DataFrame:
     """
     Performs user session segmentation and identifies the top 10 most played
     tracks from the top 50 largest listening sessions.

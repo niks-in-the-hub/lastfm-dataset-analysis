@@ -1,4 +1,4 @@
-from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
 from schema_validation import validate_schema
 
@@ -15,7 +15,7 @@ LASTFM_SCHEMA = StructType([
 
 
 # Central SparkSession builder
-def create_spark(app_name: str = "LastFM ETL"):
+def create_spark(app_name: str = "LastFM ETL") -> SparkSession:
     """
     Creates (or returns existing) SparkSession with consistent local configuration.
 
@@ -43,10 +43,21 @@ def create_spark(app_name: str = "LastFM ETL"):
 
 
 # TSV to Parquet Conversion
-def tsv_to_parquet(input_path: str, output_path: str):
+def tsv_to_parquet(input_path: str, output_path: str) -> None:
     """
     Reads a TSV file using the predefined LASTFM_SCHEMA
     and writes it as a Parquet dataset.
+
+    Parameters:-
+    input_path : str
+        Path to the input TSV file.
+    output_path : str
+        Destination directory for the Parquet output.
+
+    Returns:-
+    None
+        This function performs I/O and schema validation but does not
+        return a value.
     """
     spark = create_spark("TSV to Parquet Conversion")
 
@@ -67,11 +78,20 @@ def tsv_to_parquet(input_path: str, output_path: str):
 
 
 # Inspect Parquet Folder
-def inspect_parquet_folder(input_path: str):
+def inspect_parquet_folder(input_path: str) -> DataFrame:
     """
     Loads parquet files into a DataFrame,
     prints schema + sample rows,
     and returns (df, row_count, col_count).
+
+
+    Parameters:-
+    input_path : str
+        Path to the Parquet folder.
+
+    Returns:-
+    pyspark.sql.DataFrame
+        The loaded Parquet data as a Spark DataFrame.
     """
     spark = create_spark("Inspect Parquet Folder")
 

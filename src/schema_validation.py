@@ -1,6 +1,7 @@
 from pyspark.sql.types import StructType
+from pyspark.sql import DataFrame
 
-def validate_schema(df, expected_schema: StructType):
+def validate_schema(df: DataFrame, expected_schema: StructType) -> None:
     """
     Validates a Spark DataFrame against an expected schema.
     Performs:
@@ -14,10 +15,14 @@ def validate_schema(df, expected_schema: StructType):
         The Spark DataFrame whose schema will be validated.
     expected_schema : pyspark.sql.types.StructType
         The schema the DataFrame is will be confirmed against.
+
+    Returns:-
+    None
+        This function performs validation only and does not return a value.
     """
 
     # COLUMN CHECK
-    def check_columns():
+    def check_columns() -> None:
         """
         Ensure column names and their order match the expected schema.
         """
@@ -33,7 +38,7 @@ def validate_schema(df, expected_schema: StructType):
         print(" Column check passed.")
 
     # TYPE CHECK
-    def check_types():
+    def check_types() -> None:
         """
         Validate that each column has the expected Spark data type.
 
@@ -52,7 +57,7 @@ def validate_schema(df, expected_schema: StructType):
         print(" Type check passed.")
 
     # NULLABILITY CHECK
-    def check_nullability():
+    def check_nullability() -> None:
         """
         Check whether each column's nullability matches the expectation.
 
